@@ -4,11 +4,17 @@ namespace App\Actions;
 
 use App\Models\Dataforseo;
 use Exception;
+use Illuminate\Support\Facades\Hash;
 
 class SendRequestAction
 {
     public function sendPostRequest(string $parameter, string $target_domains, string|null $excluded_targets): void
     {
+        $login = env('DFS_LOGIN');
+        $password = env('DFS_PASSWORD');
+//        $cred = Hash::make($login . ':' . $password);
+        $cred = base64_encode($login . ':' . $password);
+
         $info['http_code'] = 500;
 
         $targets = '{';
@@ -50,7 +56,7 @@ class SendRequestAction
                     "order_by":["1.rank,asc"]
                 }]',
                 CURLOPT_HTTPHEADER => array(
-                    'Authorization: Basic Y2hhbGxlbmdlcjEwM0BkYXRhZm9yc2VvLmNvbTo0MTE3ZWI4OWFjNTM5YTEw',
+                    'Authorization: Basic ' . $cred,
                     'Content-Type: application/json'
                 ),
             ));
